@@ -41,5 +41,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation (libs.breathalyzer.sdk)
+    implementation(libs.permissionx)
 
 }

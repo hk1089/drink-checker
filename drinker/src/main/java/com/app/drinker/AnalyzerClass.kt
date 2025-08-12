@@ -8,12 +8,16 @@ import BreathalyzerSDK.Constants.Errors
 import BreathalyzerSDK.Exceptions.BluetoothLENotSupportedException
 import BreathalyzerSDK.Exceptions.BluetoothNotEnabledException
 import BreathalyzerSDK.Exceptions.LocationServicesNotEnabledException
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentActivity
+import com.permissionx.guolindev.PermissionX
 
 
 class AnalyzerClass {
@@ -153,23 +157,31 @@ class AnalyzerClass {
        // breathalyzerStateTextView.setText(message)
     }
 
-    fun requestAllPermissions(activity: Activity, requestCode: Int = 100): Boolean {
-        val permissions = arrayOf(
-            "android.permission.BLUETOOTH_SCAN",
-            "android.permission.BLUETOOTH_CONNECT",
-            "android.permission.ACCESS_COARSE_LOCATION",
-            "android.permission.ACCESS_FINE_LOCATION",
-        )
-        val permissionsToRequest = permissions.filter {
-            ContextCompat.checkSelfPermission(activity, it) != PackageManager.PERMISSION_GRANTED
-        }
-        return if (permissionsToRequest.isEmpty()) {
-            true
+    fun requestAllPermissions(
+        activity: Activity,
+        onResult: (Boolean) -> Unit
+    ) {
+        val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            listOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
         } else {
-            ActivityCompat.requestPermissions(activity, permissionsToRequest.toTypedArray(), requestCode)
-            false
+            listOf(
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
         }
+
+        PermissionX.init(activity as FragmentActivity)
+            .permissions(*permissions.toTypedArray())
+            .request { allGranted, _, _ ->
+                onResult(allGranted)
+            }
     }
+
 
     fun connectNearestClicked() {
         if (mAPI != null) {

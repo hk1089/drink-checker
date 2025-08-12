@@ -29,7 +29,13 @@ class MainActivity : AppCompatActivity() {
         }
         binding.connectNearestButtonId.setOnClickListener { view ->
            // binding.tags.text = rfid.start().toString()
-            val permissions = drinker.connectNearestClicked()
+            drinker.requestAllPermissions(this@MainActivity){
+                Log.d("MainActivity", "permissions>>> $it")
+                if (it){
+                    drinker.connectNearestClicked()
+                }
+            }
+
 
         }
         binding.startBlowProcessButtonId.setOnClickListener { view ->
