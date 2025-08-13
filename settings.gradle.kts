@@ -26,7 +26,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "uhf"
+rootProject.name = "Drink Analyzer"
 include(":app")
 
 include(":drinker")

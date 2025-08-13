@@ -25,6 +25,8 @@ class AnalyzerClass {
     private lateinit var context: Context
     private var requiresUseCount = false
     var onStatusUpdate: ((String) -> Unit)? = null // Callback for status updates
+    var onConnectedName: ((String) -> Unit)? = null // Callback for status updates
+    var onBatteryLevel: ((String) -> Unit)? = null // Callback for status updates
 
     fun startSDK(cnx: Context, apiKey: String) {
         context = cnx
@@ -42,8 +44,8 @@ class AnalyzerClass {
 
                 override fun BACtrackConnected(bacTrackDeviceType: BACTrackDeviceType) {
                         val name: String = bacTrackDeviceType.getDisplayName()
-                        setStatus("${context.getString(R.string.TEXT_CONNECTED)} to ${name}")
-
+                        onConnectedName?.invoke("${context.getString(R.string.TEXT_CONNECTED)} to ${name}")
+                        setStatus("Ready for Analysis")
                     Log.d("TAG", "BACtrackConnected: " + bacTrackDeviceType.name)
                 }
 
@@ -52,6 +54,8 @@ class AnalyzerClass {
                 }
 
                 override fun BACtrackDisconnected() {
+                    onConnectedName?.invoke("")
+                    onBatteryLevel?.invoke("")
                     setStatus(context.getString(R.string.TEXT_DISCONNECTED))
                 }
 
@@ -124,7 +128,7 @@ class AnalyzerClass {
                 override fun BACtrackBatteryLevel(level: Int) {
                     Log.d("TAG", "BACtrackBatteryLevel: " + level)
                     val message: String = context.getString(R.string.TEXT_BATTERY_LEVEL) + " " + level
-                    setStatus(String.format("\n%s", message))
+                    onBatteryLevel?.invoke(String.format("\n%s", message))
                 }
 
                 override fun BACtrackError(errorCode: Int) {

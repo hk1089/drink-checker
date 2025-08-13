@@ -19,8 +19,22 @@ class MainActivity : AppCompatActivity() {
         drinker.onStatusUpdate = { statusMessage ->
             // Update your UI or log the status here
             binding.breathalyzerStateTextView.text = statusMessage
+            drinker.requestBatteryLevelClicked()
             Log.d("YourClass", "Analyzer Status: $statusMessage")
         }
+        drinker.onBatteryLevel = { batteryLevel ->
+            // Update your UI or log the battery level here
+            runOnUiThread {
+                binding.batteryStateTextView.text = batteryLevel
+            }
+            Log.d("YourClass", "Battery Level: $batteryLevel%")
+        }
+        drinker.onConnectedName = { name ->
+            // Update your UI or log the serial number here
+            binding.connectionStateTextView.text = name
+            Log.d("YourClass", "Serial Number: $name")
+        }
+
         binding.fab.setOnClickListener { view ->
            // binding.tags.text = rfid.start().toString()
             val permissions = drinker.startSDK(this, "caea1ef90e38464eac98c5d6d37439")
@@ -45,7 +59,7 @@ class MainActivity : AppCompatActivity() {
         }
         binding.getBatteryLevel.setOnClickListener { view ->
            // binding.tags.text = rfid.start().toString()
-            val permissions = drinker.requestBatteryLevelClicked()
+
 
         }
         binding.getSerialNumberButtonId.setOnClickListener { view ->
